@@ -40,7 +40,10 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         body: const TabBarView(
-          children: [TodayTab(), ForecastTab()],
+          children: [
+            TodayTab(),
+            ForecastTab(),
+          ],
         ),
       ),
     );

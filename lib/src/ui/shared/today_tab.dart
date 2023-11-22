@@ -9,6 +9,17 @@ class TodayTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final images = [
+      'assets/images/clear.png',
+      'assets/images/heavycloud.png',
+      'assets/images/heavyrain.png',
+      'assets/images/showers.png',
+      'assets/images/clear.png',
+      'assets/images/heavyrain.png',
+      'assets/images/thunderstorm.png',
+      'assets/images/heavyrain.png',
+      'assets/images/thunderstorm.png',
+    ];
     return Padding(
       padding: EdgeInsets.only(top: 20.h, left: 10.h),
       child: Column(
@@ -23,7 +34,7 @@ class TodayTab extends StatelessWidget {
               borderRadius: BorderRadius.circular(20.h),
             ),
             child: const DefaultText(
-              'Saturday, 20 November',
+              'Sunday, 19 November',
               fontSize: 15,
               color: Colors.white,
             ),
@@ -108,6 +119,83 @@ class TodayTab extends StatelessWidget {
                   ),
                 )
               ],
+            ),
+          ),
+          SizedBox(height: 30.h),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WeatherDetails(
+                    variable: 'Precipitation: ',
+                    value: '21%',
+                  ),
+                  SizedBox(height: 10),
+                  WeatherDetails(
+                    variable: 'Humidity: ',
+                    value: '59%',
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WeatherDetails(
+                    variable: 'Wind: ',
+                    value: '10km/h',
+                  ),
+                  SizedBox(height: 10),
+                  WeatherDetails(
+                    variable: 'Sunset: ',
+                    value: '29%',
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30.h,
+          ),
+          SizedBox(
+            height: 110.h,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 9,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.kSecondaryColor.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(30),
+                    border: index == 1
+                        ? Border.all(color: Colors.white)
+                        : const Border(),
+                  ),
+                  margin: const EdgeInsets.only(right: 10),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  child: Column(
+                    children: [
+                      const DefaultText(
+                        '1:00',
+                        fontSize: 10,
+                      ),
+                      SizedBox(height: 10.h),
+                      Image.asset(
+                        images[index],
+                        height: 20.h,
+                      ),
+                      SizedBox(height: 10.h),
+                      DefaultText(
+                        '29%',
+                        fontSize: 15.sp,
+                        bold: true,
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
           ),
         ],
