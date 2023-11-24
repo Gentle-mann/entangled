@@ -1,4 +1,5 @@
 import 'package:entangled/src/constants.dart';
+import 'package:entangled/src/provider/location_provider.dart';
 import 'package:entangled/src/provider/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,6 +24,7 @@ class Entangled extends StatelessWidget {
         return MultiProvider(
             providers: [
               ChangeNotifierProvider(create: (context) => OnboardingProvider()),
+              ChangeNotifierProvider(create: (context) => LocationProvider()),
             ],
             builder: (context, child) {
               return MaterialApp(
