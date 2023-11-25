@@ -1,5 +1,7 @@
 import 'package:entangled/src/constants.dart';
+import 'package:entangled/src/models/models.dart';
 import 'package:entangled/src/models/onboarding_model.dart';
+import 'package:entangled/src/provider/location_provider.dart';
 import 'package:entangled/src/provider/onboarding_provider.dart';
 import 'package:entangled/src/size_configuration.dart';
 import 'package:entangled/src/ui/shared/shared.dart';
@@ -46,23 +48,27 @@ class OnboardingScreen extends StatelessWidget {
             return Column(
               children: [
                 OnboardingImage(image: OnboardingModel.onboarding[index].image),
-                OnboardingText(
-                  title: OnboardingModel.onboarding[index].title,
-                  subtitle: OnboardingModel.onboarding[index].subtitle,
-                  onTap: () {
-                    if (pageController.page! + 1 <
-                        OnboardingModel.onboarding.length) {
-                      onboardingProvider.goToNextPage();
-                      pageController.jumpToPage(onboardingProvider.page);
-                    } else {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return const HomeScreen();
-                        }),
-                      );
-                    }
-                  },
-                ),
+                Consumer<LocationProvider>(
+                    builder: (context, locationProvider, child) {
+                  return OnboardingText(
+                    title: OnboardingModel.onboarding[index].title,
+                    subtitle: OnboardingModel.onboarding[index].subtitle,
+                    onTap: () async {
+                      if (pageController.page! + 1 <
+                          OnboardingModel.onboarding.length) {
+                        onboardingProvider.goToNextPage();
+                        pageController.jumpToPage(onboardingProvider.page);
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) {
+                            return const HomeScreen();
+                          }),
+                        );
+                        await locationProvider.initializeApp();
+                      }
+                    },
+                  );
+                }),
               ],
             );
           },

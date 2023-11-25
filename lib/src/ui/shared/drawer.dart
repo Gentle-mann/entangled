@@ -4,6 +4,7 @@ import 'package:entangled/src/ui/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:nigerian_states_and_lga/nigerian_states_and_lga.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
@@ -57,12 +58,14 @@ class NigerianCitiesDropdown extends StatelessWidget {
         key: const ValueKey('States'),
         style: const TextStyle(color: AppColors.kSecondaryColor),
         value: locationProvider.state,
-        onChanged: (newCity) {
+        onChanged: (newCity) async {
           locationProvider.setNigerianState(newCity!);
 
           locationProvider.setLga(
             NigerianStatesAndLGA.getStateLGAs(locationProvider.state)[0],
           );
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('state', locationProvider.state);
         },
         isExpanded: true,
         hint: const Text('Select a Nigerian state'),
@@ -91,8 +94,10 @@ class NigerianLGAsDropdown extends StatelessWidget {
         key: const ValueKey('LGAs'),
         style: const TextStyle(color: AppColors.kSecondaryColor),
         value: locationProvider.lga,
-        onChanged: (newLga) {
+        onChanged: (newLga) async {
           locationProvider.setLga(newLga!);
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('lga', locationProvider.lga);
         },
         isExpanded: true,
         hint: const Text('Select a Nigerian LGA'),

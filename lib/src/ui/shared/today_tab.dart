@@ -1,10 +1,11 @@
-import 'package:countries_utils/countries_utils.dart';
 import 'package:entangled/src/constants.dart';
 import 'package:entangled/src/models/models.dart';
+import 'package:entangled/src/provider/location_provider.dart';
 import 'package:entangled/src/services/weather_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'shared.dart';
 
@@ -18,9 +19,12 @@ class TodayTab extends StatefulWidget {
 class _TodayTabState extends State<TodayTab> {
   late Future<WeatherModel> weatherDetails;
   @override
-  void initState() {
-    super.initState();
-    weatherDetails = WeatherService().getWeather('Abuja');
+  @override
+  void didChangeDependencies() {
+    final locationProvider = Provider.of<LocationProvider>(context);
+    weatherDetails = WeatherService().getWeather(
+        '${locationProvider.lga} ${locationProvider.state} Nigeria');
+    super.didChangeDependencies();
   }
 
   @override
@@ -82,7 +86,7 @@ class _TodayTabState extends State<TodayTab> {
                           child: Column(
                             children: [
                               Image.asset(
-                                'assets/images/${data.current.condition.text.toLowerCase()}.png',
+                                'assets/images/${data.current.condition.text.toLowerCase().replaceAll(' ', '')}.png',
                                 height: 100,
                               ),
                               const SizedBox(height: 20),
