@@ -1,5 +1,6 @@
 import 'package:entangled/src/constants.dart';
 import 'package:entangled/src/models/onboarding_model.dart';
+import 'package:entangled/src/provider/app_state_manager.dart';
 import 'package:entangled/src/provider/onboarding_provider.dart';
 import 'package:entangled/src/size_configuration.dart';
 import 'package:flutter/material.dart';
@@ -44,25 +45,31 @@ class OnboardingScreen extends StatelessWidget {
             return Column(
               children: [
                 OnboardingImage(image: OnboardingModel.onboarding[index].image),
-                OnboardingText(
-                  title: OnboardingModel.onboarding[index].title,
-                  subtitle: OnboardingModel.onboarding[index].subtitle,
-                  onTap: () {
-                    final onboardingProvider =
-                        Provider.of<OnboardingProvider>(context, listen: false);
+                Consumer<AppCacheManager>(
+                    builder: (context, appCacheManager, child) {
+                  return OnboardingText(
+                    title: OnboardingModel.onboarding[index].title,
+                    subtitle: OnboardingModel.onboarding[index].subtitle,
+                    onTap: () async {
+                      final onboardingProvider =
+                          Provider.of<OnboardingProvider>(context,
+                              listen: false);
 
-                    if (onboardingProvider.page + 1 >
-                        OnboardingModel.onboarding.length) {
-                      onboardingProvider.goToNextPage();
-                    } else {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) {
-                          return const HomeScreen();
-                        }),
-                      );
-                    }
-                  },
-                ),
+                      if (onboardingProvider.page + 1 >
+                          OnboardingModel.onboarding.length) {
+                        onboardingProvider.goToNextPage();
+                      } else {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) {
+                            return const HomeScreen();
+                          }),
+                        );
+
+                        await appCacheManager.onboard();
+                      }
+                    },
+                  );
+                }),
               ],
             );
           },

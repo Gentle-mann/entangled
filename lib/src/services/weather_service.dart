@@ -15,4 +15,16 @@ class WeatherService {
       throw Exception('Failed to get data');
     }
   }
+
+  Future getWeatherForecast(String location) async {
+    final query =
+        'http://api.weatherapi.com/v1/forecast.json?key=c05e2b8859354e5e89e190026231611&q=$location&days=10&aqi=no&alerts=no';
+    final uri = Uri.parse(query);
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      return;
+    } else {
+      return;
+    }
+  }
 }

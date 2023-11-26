@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 class OnboardingProvider extends ChangeNotifier {
   int _page = 0;
+  //bool _hasOnboarded
   int get page {
     return _page;
   }

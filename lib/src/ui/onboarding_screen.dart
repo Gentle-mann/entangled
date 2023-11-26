@@ -1,7 +1,7 @@
 import 'package:entangled/src/constants.dart';
 import 'package:entangled/src/models/models.dart';
 import 'package:entangled/src/models/onboarding_model.dart';
-import 'package:entangled/src/provider/location_provider.dart';
+import 'package:entangled/src/provider/app_state_manager.dart';
 import 'package:entangled/src/provider/onboarding_provider.dart';
 import 'package:entangled/src/size_configuration.dart';
 import 'package:entangled/src/ui/shared/shared.dart';
@@ -48,8 +48,8 @@ class OnboardingScreen extends StatelessWidget {
             return Column(
               children: [
                 OnboardingImage(image: OnboardingModel.onboarding[index].image),
-                Consumer<LocationProvider>(
-                    builder: (context, locationProvider, child) {
+                Consumer<AppCacheManager>(
+                    builder: (context, appCacheManager, child) {
                   return OnboardingText(
                     title: OnboardingModel.onboarding[index].title,
                     subtitle: OnboardingModel.onboarding[index].subtitle,
@@ -64,7 +64,7 @@ class OnboardingScreen extends StatelessWidget {
                             return const HomeScreen();
                           }),
                         );
-                        await locationProvider.initializeApp();
+                        await appCacheManager.onboard();
                       }
                     },
                   );

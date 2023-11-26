@@ -19,9 +19,9 @@ class TodayTab extends StatefulWidget {
 class _TodayTabState extends State<TodayTab> {
   late Future<WeatherModel> weatherDetails;
   @override
-  @override
   void didChangeDependencies() {
-    final locationProvider = Provider.of<LocationProvider>(context);
+    final locationProvider =
+        Provider.of<LocationProvider>(context, listen: false);
     weatherDetails = WeatherService().getWeather(
         '${locationProvider.lga} ${locationProvider.state} Nigeria');
     super.didChangeDependencies();
@@ -79,7 +79,6 @@ class _TodayTabState extends State<TodayTab> {
                   ),
                   SizedBox(height: 20.h),
                   SizedBox(
-                    //height: 130.h,
                     child: Row(
                       children: [
                         Expanded(

@@ -1,10 +1,10 @@
+import 'package:entangled/src/cache/app_cache.dart';
 import 'package:entangled/src/constants.dart';
 import 'package:entangled/src/provider/location_provider.dart';
 import 'package:entangled/src/ui/shared/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:nigerian_states_and_lga/nigerian_states_and_lga.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
@@ -30,7 +30,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             NigerianCitiesDropdown(),
             SizedBox(height: 20),
             DefaultText(
-              'Choose a Nigerian LGA',
+              'Choose an LGA',
               fontSize: 15,
             ),
             NigerianLGAsDropdown(),
@@ -38,10 +38,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
         ),
       ),
     );
-  }
-
-  menuItems({required String city}) {
-    return DropdownMenuItem(child: Text(city));
   }
 }
 
@@ -58,14 +54,14 @@ class NigerianCitiesDropdown extends StatelessWidget {
         key: const ValueKey('States'),
         style: const TextStyle(color: AppColors.kSecondaryColor),
         value: locationProvider.state,
-        onChanged: (newCity) async {
-          locationProvider.setNigerianState(newCity!);
+        onChanged: (newState) async {
+          locationProvider.updateNigerianState(newState!);
 
-          locationProvider.setLga(
+          locationProvider.updateLga(
             NigerianStatesAndLGA.getStateLGAs(locationProvider.state)[0],
           );
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString('state', locationProvider.state);
+          await AppCache().setNigerianState(locationProvider.state);
+          await AppCache().setLga(locationProvider.lga);
         },
         isExpanded: true,
         hint: const Text('Select a Nigerian state'),
@@ -95,12 +91,11 @@ class NigerianLGAsDropdown extends StatelessWidget {
         style: const TextStyle(color: AppColors.kSecondaryColor),
         value: locationProvider.lga,
         onChanged: (newLga) async {
-          locationProvider.setLga(newLga!);
-          final prefs = await SharedPreferences.getInstance();
-          prefs.setString('lga', locationProvider.lga);
+          locationProvider.updateLga(newLga!);
+          await AppCache().setLga(locationProvider.lga);
         },
         isExpanded: true,
-        hint: const Text('Select a Nigerian LGA'),
+        hint: const Text('Select an LGA'),
         items: NigerianStatesAndLGA.getStateLGAs(locationProvider.state)
             .map<DropdownMenuItem<String>>((String value) {
           return DropdownMenuItem<String>(
