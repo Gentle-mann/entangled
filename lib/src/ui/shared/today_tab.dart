@@ -1,48 +1,48 @@
 import 'package:entangled/src/constants.dart';
-import 'package:entangled/src/models/models.dart';
-import 'package:entangled/src/provider/location_provider.dart';
-import 'package:entangled/src/services/weather_service.dart';
+import 'package:entangled/src/models/weather_forcast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
 import 'shared.dart';
 
 class TodayTab extends StatefulWidget {
-  const TodayTab({super.key});
+  const TodayTab({super.key, required this.weatherDetails});
+  final Future<WeatherForecastModel> weatherDetails;
 
   @override
   State<TodayTab> createState() => _TodayTabState();
 }
 
 class _TodayTabState extends State<TodayTab> {
-  late Future<WeatherModel> weatherDetails;
+  late List<Forecastday> forecastDay;
+  List<Hour> forecastHours = [];
+  int selectedHourForecast = 0;
+  int itemCount = 0;
   @override
   void didChangeDependencies() {
-    final locationProvider =
-        Provider.of<LocationProvider>(context, listen: false);
-    weatherDetails = WeatherService().getWeather(
-        '${locationProvider.lga} ${locationProvider.state} Nigeria');
     super.didChangeDependencies();
+    getFutureTimes() async {
+      final weather = await widget.weatherDetails;
+      final hours = weather.forecast.forecastday[0].hour;
+      forecastHours = hours.where((element) {
+        final formattedTime =
+            DateFormat.H().format(DateTime.parse(element.time));
+        return int.parse(formattedTime) > DateTime.now().hour;
+      }).toList();
+    }
+
+    getFutureTimes();
   }
 
   @override
   Widget build(BuildContext context) {
-    final images = [
-      'assets/images/clear.png',
-      'assets/images/heavycloud.png',
-      'assets/images/heavyrain.png',
-      'assets/images/showers.png',
-      'assets/images/clear.png',
-      'assets/images/heavyrain.png',
-      'assets/images/thunderstorm.png',
-      'assets/images/heavyrain.png',
-      'assets/images/thunderstorm.png',
-    ];
+    if (forecastHours.length < 7) {
+      itemCount = forecastHours.length;
+    }
     return FutureBuilder(
-        future: weatherDetails,
+        future: widget.weatherDetails,
         builder: (context, snapshot) {
+          //print(forecastHours.length);
           final data = snapshot.data;
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
@@ -176,11 +176,19 @@ class _TodayTabState extends State<TodayTab> {
                           WeatherDetails(
                             variable: 'Precipitation: ',
                             value: '${data.current.precipMm.round()}',
+                            icon: 'assets/images/lightrainshower.png',
                           ),
                           const SizedBox(height: 10),
                           WeatherDetails(
                             variable: 'Humidity: ',
                             value: '${data.current.humidity.round()}%',
+                            icon: 'assets/images/lightrain.png',
+                          ),
+                          const SizedBox(height: 10),
+                          WeatherDetails(
+                            variable: 'Sunrise: ',
+                            value: data.forecast.forecastday[0].astro.sunrise,
+                            icon: 'assets/images/clear.png',
                           ),
                         ],
                       ),
@@ -190,11 +198,19 @@ class _TodayTabState extends State<TodayTab> {
                           WeatherDetails(
                             variable: 'Wind: ',
                             value: '${data.current.windKph.round()}km/h',
+                            icon: 'assets/images/windspeed.png',
                           ),
                           const SizedBox(height: 10),
                           WeatherDetails(
                             variable: 'Pressure: ',
                             value: '${data.current.pressureMb.round()}Mb',
+                            icon: 'assets/images/heavycloud.png',
+                          ),
+                          const SizedBox(height: 10),
+                          WeatherDetails(
+                            variable: 'Sunset: ',
+                            value: data.forecast.forecastday[0].astro.sunset,
+                            icon: 'assets/images/moon.png',
                           ),
                         ],
                       ),
@@ -204,40 +220,47 @@ class _TodayTabState extends State<TodayTab> {
                     height: 30.h,
                   ),
                   SizedBox(
-                    height: 110.h,
+                    height: 120.h,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: 9,
+                      itemCount: forecastHours.length < 7 ? itemCount : 7,
                       itemBuilder: (BuildContext context, int index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.kSecondaryColor.withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(30),
-                            border: index == 1
-                                ? Border.all(color: Colors.white)
-                                : const Border(),
-                          ),
-                          margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 15, horizontal: 10),
-                          child: Column(
-                            children: [
-                              const DefaultText(
-                                '1:00',
-                                fontSize: 10,
-                              ),
-                              SizedBox(height: 10.h),
-                              Image.asset(
-                                images[index],
-                                height: 20.h,
-                              ),
-                              SizedBox(height: 10.h),
-                              DefaultText(
-                                '29%',
-                                fontSize: 15.sp,
-                                bold: true,
-                              ),
-                            ],
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedHourForecast = index;
+                            });
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.kSecondaryColor.withOpacity(0.5),
+                              borderRadius: BorderRadius.circular(30),
+                              border: selectedHourForecast == index
+                                  ? Border.all(color: Colors.white)
+                                  : const Border(),
+                            ),
+                            margin: const EdgeInsets.only(right: 10),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 20, horizontal: 15),
+                            child: Column(
+                              children: [
+                                DefaultText(
+                                  '${DateFormat.H().format(DateTime.parse(forecastHours[index].time))}:00',
+                                  fontSize: 10,
+                                ),
+                                SizedBox(height: 10.h),
+                                Image.asset(
+                                  'assets/images/${forecastHours[index].condition.text.toLowerCase().replaceAll(' ', '')}.png',
+                                  height: 20.h,
+                                ),
+                                SizedBox(height: 10.h),
+                                DefaultText(
+                                  '${forecastHours[index].tempC?.round()}°C',
+                                  fontSize: 15.sp,
+                                  bold: true,
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

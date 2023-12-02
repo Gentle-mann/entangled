@@ -48,7 +48,7 @@ class OnboardingScreen extends StatelessWidget {
             return Column(
               children: [
                 OnboardingImage(image: OnboardingModel.onboarding[index].image),
-                Consumer<AppCacheManager>(
+                Consumer<CacheProvider>(
                     builder: (context, appCacheManager, child) {
                   return OnboardingText(
                     title: OnboardingModel.onboarding[index].title,

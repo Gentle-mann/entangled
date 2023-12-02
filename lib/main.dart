@@ -11,24 +11,22 @@ import 'src/ui/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final appCacheManager = AppCacheManager();
+  final cacheProvider = CacheProvider();
   final locationProvider = LocationProvider();
 
-  await appCacheManager.initialize();
+  await cacheProvider.initialize();
   await locationProvider.initializeLocation();
 
   runApp(Entangled(
-    appCacheManager: appCacheManager,
+    cacheProvider: cacheProvider,
     locationProvider: locationProvider,
   ));
 }
 
 class Entangled extends StatefulWidget {
   const Entangled(
-      {super.key,
-      required this.appCacheManager,
-      required this.locationProvider});
-  final AppCacheManager appCacheManager;
+      {super.key, required this.cacheProvider, required this.locationProvider});
+  final CacheProvider cacheProvider;
   final LocationProvider locationProvider;
 
   @override
@@ -48,8 +46,7 @@ class _EntangledState extends State<Entangled> {
               ChangeNotifierProvider(create: (context) => OnboardingProvider()),
               ChangeNotifierProvider(
                   create: (context) => widget.locationProvider),
-              ChangeNotifierProvider(
-                  create: (context) => widget.appCacheManager),
+              ChangeNotifierProvider(create: (context) => widget.cacheProvider),
             ],
             builder: (context, child) {
               return MaterialApp(
@@ -69,7 +66,7 @@ class _EntangledState extends State<Entangled> {
                     child: widget!,
                   );
                 }),
-                home: widget.appCacheManager.hasOnboarded
+                home: widget.cacheProvider.hasOnboarded
                     ? const HomeScreen()
                     : const OnboardingScreen(),
               );

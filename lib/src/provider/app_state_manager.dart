@@ -1,7 +1,7 @@
 import 'package:entangled/src/cache/app_cache.dart';
 import 'package:flutter/cupertino.dart';
 
-class AppCacheManager extends ChangeNotifier {
+class CacheProvider extends ChangeNotifier {
   bool _hasOnboarded = false;
 
   final _appCache = AppCache();
@@ -11,7 +11,6 @@ class AppCacheManager extends ChangeNotifier {
 
   Future<void> initialize() async {
     _hasOnboarded = await _appCache.didUserCompleteOnboarding();
-    notifyListeners();
   }
 
   Future<void> onboard() async {

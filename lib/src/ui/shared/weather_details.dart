@@ -8,9 +8,11 @@ class WeatherDetails extends StatelessWidget {
     super.key,
     required this.variable,
     required this.value,
+    required this.icon,
   });
   final String variable;
   final String value;
+  final String icon;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +21,7 @@ class WeatherDetails extends StatelessWidget {
       child: Row(
         children: [
           Image.asset(
-            'assets/images/heavycloud.png',
+            icon,
             height: 14.h,
           ),
           const SizedBox(
